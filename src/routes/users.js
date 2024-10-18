@@ -5,7 +5,7 @@ const router = express.Router();
 const { sql, poolPromise } = require('../database/conection');
 
 // Ruta para obtener todos los usuarios
-router.get('/api/liquidacion/usuarios', async (req, res) => {
+router.get('/liquidacion/usuarios', async (req, res) => {
   try {
     const pool = await poolPromise;  // Obtener la conexión al pool de SQL Server
     const result = await pool.request().query(`SELECT RunCuerpo, RunDigito, Nombres, ApellidoPaterno, ApellidoMaterno, Email FROM [Castellano].[dbo].[Persona]`);  // Ejecutar consulta SQL
@@ -14,7 +14,7 @@ router.get('/api/liquidacion/usuarios', async (req, res) => {
     res.status(500).json({ error: err.message });  // Manejo de errores
   }
 });
-router.get('/api/liquidacion/usuarios/rut/:id', async (req, res) => {
+router.get('/liquidacion/usuarios/rut/:id', async (req, res) => {
   try {
     const pool = await poolPromise;
     const rut = parseInt(req.params.id)
@@ -25,7 +25,7 @@ router.get('/api/liquidacion/usuarios/rut/:id', async (req, res) => {
   }
 });
 
-router.get('/api/liquidacion/usuario/:id/:year/:month', async (req, res) => {
+router.get('/liquidacion/usuario/:id/:year/:month', async (req, res) => {
   try {
     const pool = await poolPromise;
     const rut = parseInt(req.params.id)
