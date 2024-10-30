@@ -38,5 +38,28 @@ router.get('/liquidacion/usuario/:id/:year/:month', async (req, res) => {
   }
 });
 
+//contabilidad
+//ver cuentas contables
+router.get('/contabilidad/cuentas', async (req, res) => {
+  try {
+    const pool = await poolPromise;  // Obtener la conexión al pool de SQL Server
+    const result = await pool.request().query(`SELECT AnoNumero, NumeroNivel, Numero, Descripcion, RazonSocial, Nombre, RutCuerpo, RutDigito FROM Contabilidad.CuentaPresupuestaria INNER JOIN Empresa on CuentaPresupuestaria.EmpresaId = Empresa.Id INNER JOIN TipoCuenta on CuentaPresupuestaria.TipoCuentaCodigo = TipoCuenta.Codigo ORDER by NumeroNivel ASC;`);  // Ejecutar consulta SQL
+    res.json(result.recordset);  // Enviar los resultados como JSON
+  } catch (err) {
+    res.status(500).json({ error: err.message });  // Manejo de errores
+  }
+});
+
+//movimientos por año
+router.get('/contabilidad/movimientos/:year', async (req, res) => {
+  try {
+    const pool = await poolPromise;
+    const year = parseInt(req.params.year)
+    const result = await pool.request().query(`SELECT TOP (10) [AnoNumero],Comprobante.Id,[DepartamentoId] = Departamento.Nombre,[UnidadId] = Unidad.Nombre,[FuncionarioId] = Persona.Nombres + Persona.ApellidoPaterno,[Fecha],[Numero],[TotalDebe],[TotalHaber],[GlosaGlobal],[ComprobanteTipoCodigo] = ComprobanteTipo.Nombre,[EstadoComprobanteCodigo] = EstadoComprobante.Nombre FROM [Castellano].[Contabilidad].[Comprobante] INNER JOIN [Castellano].[Contabilidad].[ComprobanteTipo] on Comprobante.ComprobanteTipoCodigo = ComprobanteTipo.Codigo INNER JOIN [Castellano].[Contabilidad].[EstadoComprobante] on Comprobante.EstadoComprobanteCodigo = EstadoComprobante.Codigo INNER JOIN [Castellano].[dbo].[Unidad] on Comprobante.UnidadId = Unidad.Id INNER JOIN [Castellano].[dbo].[Departamento] on Comprobante.DepartamentoId = Departamento.Id INNER JOIN [Castellano].[dbo].[Persona] on Comprobante.FuncionarioId = Persona.Id WHERE AnoNumero ='${year}' ORDER By Fecha ASC`);  // Ejecutar consulta SQL
+    res.json(result.recordset);  // Enviar los resultados como JSON
+  } catch (err) {
+    res.status(500).json({ error: err.message });  // Manejo de errores
+  }
+});
 
 module.exports = router;
