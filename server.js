@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const routes = require('./src/routes/users')
+const cors = require('cors');
 
 // Configurar variables de entorno
 dotenv.config();
@@ -12,7 +13,7 @@ const PORT = process.env.PORT || 4000;
 // Middlewares
 app.use(express.json());  // Para parsear cuerpos de solicitudes JSON
 app.use(morgan('dev'));   // Logging de peticiones HTTP
-
+app.use(cors()); 
 // Rutas
 app.use('/api', routes);
 
